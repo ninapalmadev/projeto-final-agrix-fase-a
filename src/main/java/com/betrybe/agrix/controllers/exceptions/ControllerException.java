@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
- * Controller exception
+ * Controller exception.
  */
 @ControllerAdvice
 public class ControllerException {

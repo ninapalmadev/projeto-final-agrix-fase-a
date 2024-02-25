@@ -7,15 +7,7 @@ import com.betrybe.agrix.models.entities.Farm;
  */
 
 public record FarmDto(Long id, String name, Double size) {
-
-  /**
-   * To farm.
-   *
-   * @return the farm
-   */
-
   public Farm toFarm() {
-    return new Farm(id, name, size);
+    return new Farm(id, name, size, null);
   }
-
 }

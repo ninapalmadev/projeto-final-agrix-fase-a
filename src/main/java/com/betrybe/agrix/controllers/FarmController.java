@@ -1,15 +1,17 @@
 package com.betrybe.agrix.controllers;
 
+import com.betrybe.agrix.controllers.dto.CropDto;
 import com.betrybe.agrix.controllers.dto.FarmDto;
 import com.betrybe.agrix.controllers.exceptions.NotFoundException;
+import com.betrybe.agrix.models.entities.Crop;
 import com.betrybe.agrix.models.entities.Farm;
 import com.betrybe.agrix.service.FarmService;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,14 +56,47 @@ public class FarmController {
     return ResponseEntity.ok(allFarms);
   }
 
+  /**
+   * GET method farm.
+   *
+   * @param farmId Long
+   * @return ResponseEntity
+   */
   @GetMapping(value = "/{farmId}")
   public ResponseEntity<Farm> getFarmById(@PathVariable Long farmId) {
+    Optional<Farm> optionalFarm = farmService.getFarmById(farmId);
+    if (optionalFarm.isEmpty()) {
+      throw new NotFoundException("Fazenda não encontrada!");
+    }
+    return ResponseEntity.status(HttpStatus.OK).body(optionalFarm.get());
+  }
+
+  /**
+   * Crop POST method.
+   *
+   * @param farmId from farm id
+   * @param cropDto from crop dto
+   * @return ResponseEntity
+   */
+  @PostMapping(value = "/{farmId}/crops")
+  public ResponseEntity<CropDto> createCrop(
+      @PathVariable Long farmId,
+      @RequestBody CropDto cropDto) {
     Optional<Farm> optionalFarm = farmService.getFarmById(farmId);
 
     if (optionalFarm.isEmpty()) {
       throw new NotFoundException("Fazenda não encontrada!");
     }
+    Crop newCrop = farmService.createCrop(farmId, cropDto.toCrop()).get();
+    return ResponseEntity.status(HttpStatus.CREATED).body(new CropDto(
+        newCrop.getId(),
+        newCrop.getName(),
+        newCrop.getPlantedArea(),
+        newCrop.getFarm().getId()));
+  }
 
-    return ResponseEntity.status(HttpStatus.OK).body(optionalFarm.get());
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<String> handleException(NotFoundException exception) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
   }
 }
