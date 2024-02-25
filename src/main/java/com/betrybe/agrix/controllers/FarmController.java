@@ -1,9 +1,10 @@
 package com.betrybe.agrix.controllers;
 
-import com.betrybe.agrix.controllers.dto.ResponseDto;
+import com.betrybe.agrix.controllers.dto.FarmDto;
 import com.betrybe.agrix.models.entities.Farm;
 import com.betrybe.agrix.service.FarmService;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,22 +34,20 @@ public class FarmController {
   }
 
   /**
-   * Create farm response entity.
+   * Farm POST method.
    *
-   * @param farm the farm
-   * @return the response entity
+   *  @param farmDto FarmDto
+   * @return ResponseEntity
    */
   @PostMapping()
-  public ResponseEntity<Farm> createFarm(@RequestBody Farm farm) {
-    Farm newFarm = farmService.insertFarm(farm);
-    ResponseDto<Farm> responseDto = new ResponseDto<>(newFarm);
-    return ResponseEntity.status(HttpStatus.CREATED).body(responseDto.data());
+  public ResponseEntity<Farm> createFarm(@RequestBody FarmDto farmDto) {
+    Farm newFarm = farmService.createFarm(farmDto.toFarm());
+    return ResponseEntity.status(HttpStatus.CREATED).body(newFarm);
   }
 
   @GetMapping()
   public ResponseEntity<List<Farm>> getAllFarms() {
-    List<Farm> newFarm = farmService.getAllFarms();
-    ResponseDto<List<Farm>> responseDto = new ResponseDto<>(newFarm);
-    return ResponseEntity.status(HttpStatus.OK).body(responseDto.data());
+    List<Farm> allFarms = farmService.getAllFarms();
+    return ResponseEntity.ok(allFarms);
   }
 }
