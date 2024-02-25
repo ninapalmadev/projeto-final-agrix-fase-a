@@ -33,6 +33,10 @@ public class Farm {
     this.size = size;
   }
 
+  public Farm() {
+
+  }
+
   /**
    * Gets id.
    *
