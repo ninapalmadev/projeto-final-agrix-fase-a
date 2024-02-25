@@ -8,6 +8,7 @@ import com.betrybe.agrix.models.entities.Farm;
 import com.betrybe.agrix.service.FarmService;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,6 +94,30 @@ public class FarmController {
         newCrop.getName(),
         newCrop.getPlantedArea(),
         newCrop.getFarm().getId()));
+  }
+
+  /**
+   * GET all crops Method.
+   *
+   * @param farmId farm id
+   * @return list of cropsexi
+   */
+  @GetMapping(value = "/{farmId}/crops")
+  public List<CropDto> getAllCrops(@PathVariable Long farmId) {
+    Optional<Farm> optionalFarm = farmService.getFarmById(farmId);
+
+    if (optionalFarm.isEmpty()) {
+      throw new NotFoundException("Fazenda não encontrada!");
+    }
+    List<Crop> crops = farmService.getAllCrops(farmId).get();
+
+    return crops.stream()
+        .map(crop -> new CropDto(
+            crop.getId(),
+            crop.getName(),
+            crop.getPlantedArea(),
+            crop.getFarm().getId()))
+        .collect(Collectors.toList());
   }
 
   @ExceptionHandler(NotFoundException.class)

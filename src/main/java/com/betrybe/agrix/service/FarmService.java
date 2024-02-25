@@ -1,5 +1,6 @@
 package com.betrybe.agrix.service;
 
+import com.betrybe.agrix.controllers.exceptions.NotFoundException;
 import com.betrybe.agrix.models.entities.Crop;
 import com.betrybe.agrix.models.entities.Farm;
 import com.betrybe.agrix.models.repositories.CropRepository;
@@ -45,16 +46,29 @@ public class FarmService {
    */
   public Optional<Crop> createCrop(Long  farmId, Crop crop) {
     Optional<Farm> optionalFarm = farmRepository.findById(farmId);
-
     if (optionalFarm.isEmpty()) {
       return Optional.empty();
     }
-
     Farm farm = optionalFarm.get();
     crop.setFarm(farm);
     Crop newCrop = cropRepository.save(crop);
     farm.getCrops().add(newCrop);
-
     return Optional.of(newCrop);
+  }
+
+  /**
+   * GET all crops.
+   *
+   * @param farmId farm id
+   * @return all crops
+   */
+
+  public Optional<List<Crop>> getAllCrops(Long farmId) {
+    Optional<Farm> optionalFarm = farmRepository.findById(farmId);
+    if (optionalFarm.isEmpty()) {
+      return Optional.empty();
+    }
+    Farm farm = optionalFarm.get();
+    return Optional.of(farm.getCrops());
   }
 }
